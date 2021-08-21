@@ -1,5 +1,7 @@
 ## 前言
 
+[效果](https://www.bilibili.com/video/BV1vy4y1V7Ao)
+
 游戏启动后，运行脚本文件（PRTS For YuanShen.ahk），自动在后台运行
 
 在任务栏里找到图标（绿色H图标）右键选择 Exit 即可退出
