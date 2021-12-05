@@ -24,7 +24,8 @@ sYuanShenPath := "E:\Genshin Impact\Genshin Impact Game\YuanShen.exe"
 sAfterBurnerPath := "C:\Program Files (x86)\MSI Afterburner\MSIAfterburner.exe"
 sOBSPath := "C:\Program Files\obs-studio\bin\64bit\obs64.exe"
 sOBSWorkingDir := "C:\Program Files\obs-studio\bin\64bit"
-
+bIntA := False
+bActive := False
 
 
 ; 固定配置
@@ -84,23 +85,51 @@ Return
 CapsLock & a::Run, %sAfterBurnerPath%
 CapsLock & o::Run, %sOBSPath%, %sOBSWorkingDir%
 
-RepeatAndWait(keySeq, waitKey, waitTime := 0.1)
+WaitUP(waitKey, waitTime := 0.1)
 {
-    Loop
+    KeyWait, %waitKey%, T%waitTime%
+    If Not ErrorLevel
     {
-        Send, %keySeq%
-        KeyWait, %waitKey%, T%waitTime%
-        If Not ErrorLevel
-        {
-            Return
-        }
+        Return True ; Released
     }
+    Return False ; Still down
 }
 
 ; 只在游戏窗口活动时有效
 #IfWinActive ahk_group ys
 
-*XButton1::RepeatAndWait("{Blind}{LButton down}{LButton up}", "XButton1")
+~w::
+~a::
+~s::
+~d::
+~e::
+~q::
+bIntA := True
+If Not GetKeyState("w", "P")
+{
+    Send {w up}
+}
+Return
+
+~w Up::
+~s Up::
+~a Up::
+~d Up::
+~e Up::
+~q Up::
+bIntA := False
+Return
+
+*XButton1::
+Loop
+{
+    if !bIntA
+        Send, {Blind}{LButton down}{LButton up}
+    if WaitUP("XButton1")
+        Return
+}
+Return
+
 MButton::f
 XButton2::w
 RCtrl::MButton
@@ -112,24 +141,28 @@ Send {Space up}
 Return
 
 ~Space::
-KeyWait, Space, T0.3
-If Not ErrorLevel
-{
+if WaitUP("Space", 0.3)
     Return
+
+Loop
+{
+    Send, {Blind}{Space}
+    if WaitUP("Space")
+        Return
 }
-RepeatAndWait("{Blind}{Space}", "Space")
 Return
 
-~*f::RepeatAndWait("{Blind}f", "f")
+~*f::
+Loop
+{
+    Send, {Blind}f
+    if WaitUP("f")
+        Return
+}
+Return
 
 CapsLock & w::
 Send, {Blind}{w down}
 Return
 
-~s::
-If Not GetKeyState("w", "P")
-{
-    Send {w up}
-}
-Return
 #IfWinActive
