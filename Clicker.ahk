@@ -60,9 +60,19 @@ if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
 }
 
 ; 适配国服和国际服
-GroupAdd, ys, ahk_exe YuanShen.exe
-GroupAdd, ys, ahk_exe GenshinImpact.exe
+GroupAdd, ys, ahk_exe YuanShen.exe ahk_class UnityWndClass
+GroupAdd, ys, ahk_exe GenshinImpact.exe ahk_class UnityWndClass
 Return
+
+WaitUP(waitKey, waitTime := 0.1)
+{
+    KeyWait, %waitKey%, T%waitTime%
+    If Not ErrorLevel
+    {
+        Return True ; Released
+    }
+    Return False ; Still down
+}
 
 
 CapsLock & x::
@@ -77,6 +87,7 @@ if not WinExist("ahk_group ys")
 } else if WinActive("ahk_group ys")
 {
     Send, {Esc}
+    WinMinimize, ahk_group ys
     WinHide, ahk_group ys
     Return
 } else WinShow, ahk_group ys
@@ -85,15 +96,6 @@ Return
 CapsLock & a::Run, %sAfterBurnerPath%
 CapsLock & o::Run, %sOBSPath%, %sOBSWorkingDir%
 
-WaitUP(waitKey, waitTime := 0.1)
-{
-    KeyWait, %waitKey%, T%waitTime%
-    If Not ErrorLevel
-    {
-        Return True ; Released
-    }
-    Return False ; Still down
-}
 
 ; 只在游戏窗口活动时有效
 #IfWinActive ahk_group ys
